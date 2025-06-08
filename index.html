@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+		<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com gap: https://nearbo.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:; "> -->
+		<meta name="format-detection" content="telephone=no">
+		<meta name="msapplication-tap-highlight" content="no">
+		<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="msapplication-tap-highlight" content="no" />
+		<meta name="color-scheme" content="light dark" />
+        <title>Siddha Refines</title>
+    </head>
+    <body>
+        <div id = "app">  
+		  <language-component v-if="lngActive"></language-component> 
+		  <router-view></router-view> 
+		  <side-menu></side-menu>
+	    </div>
+		
+		<script type="text/x-template" id="main-header">
+		  <header class="main-header" >
+			 <div class="inner">  
+			   <div class="left" ><span id="showmenu" v-on:click="showMenu()"><i class="fa menu"></i></span></div>
+			   <div class="center home-logo"> 
+				  <router-link to="/home" style="height: 30px; display: block;">
+					<img src="img/logo.svg"/> 
+			      </router-link>
+			   </div>
+			   
+			   <div class="left" ><router-link to="/home"><i class="fa home"></i></router-link><span class="sp" v-on:click="showLanguage()"><i class="fa lan"></i></span></div>
+			 </div>
+		  </header>
+		</script>
+		
+		<!-- Language Screen -->
+		<script type="text/x-template" id="language">
+		<main class="language-screen"> 
+		  <div class="row-inner">
+			<h1>Choose language</h1>
+			<div class="lan-sec">
+			  <div class="sin-ite">English <input type="radio" value="en" name="language" v-model="language" /><i></i></div>
+			  <div class="sin-ite">தமிழ் <input type="radio" value="tn" name="language" v-model="language" /><i></i></div> 
+			</div>
+			<div class="text-center">
+			  <button class="btn-1" v-on:click="updateValue()">Continue</button>
+			</div>
+		  </div>
+		</main>
+		</script>
+		
+		    
+		<!-- home page -->
+		<script type="text/x-template" id="home">
+		  <div class="content-area">
+			<div class="home-page" v-scrollEl>
+			<div class="home-page-in">
+			  <div class="row">
+			    <div class="col-4" v-for="item in list" :key="item">
+				  <div class="home-con" v-on:click="view(item.id)">  
+				  <div class="home-con-inner">  
+				    <div class="vim" v-bind:style="{ backgroundImage: 'url(' + img(item.id) + ')' }"></div>
+					<h4 class="tnn" v-if="language == 'tn'">{{item.tn}}</h4>
+					<h4 v-else>{{item.en}}</h4>
+				  </div>
+				  </div>
+				</div><!-- end col -->
+			  </div><!-- end row -->
+			</div>  
+			</div>  
+		  </div>
+		</script> 
+		
+		<!-- list page -->
+		<script type="text/x-template" id="list">
+		  <div class="content-area" >
+		    <div class="content-inner">
+			  <div class="search">
+				<div v-if="language == 'tn'">
+					<input type="text" v-model="search"  placeholder="தேடல்" @input='evt=>search=evt.target.value, updateData' @change='evt=>search=evt.target.value, updateData' :value="search" v-on:keypress='evt=>search=evt.target.value, updateData' />
+				</div>
+				<div v-else>
+					<input type="text" v-model="search" placeholder="Search" @input='evt=>search=evt.target.value, updateData' @change='evt=>search=evt.target.value, updateData' :value="search" v-on:keypress='evt=>search=evt.target.value, updateData' />
+				</div> 
+				 
+
+			  </div>
+			  <section >
+				  <div class="list-inner">
+				  <div class="h2-hix">
+				  <div class="h2-hix-in">
+				  
+				  <h2 v-if="language == 'tn'">{{title_tn}}</h2>
+				  <h2 v-else>{{title_en}}</h2>
+				   </div> 
+				  <div v-if="sndata.length">
+					  <div class="sin-ite" v-on:click="view(item.id)" v-for="(item, index) in sndata" :key="item">   
+						<h4 v-if="language == 'tn'">{{item.tn}}<span></span></h4>
+						<h4 v-else >
+							<div v-if="id == '1'">
+								<i>{{item.en}}</i> {{item.nam}}<span></span>
+							</div>
+							<div v-else>
+								{{item.en}} {{item.nam}}<span></span>
+							</div> 
+						</h4> 
+					  </div>
+				  </div> 
+				  </div> 
+				 
+				  <div v-else class="no-data">
+					<p v-if="language == 'tn'">வேறு தகவல்கள் இல்லை</p>
+					<p v-else>No data found</p>
+				  </div>
+				  </div> 
+			  </section>
+		    </div>
+		  </div>
+		</script> 
+		
+		<!-- list page -->
+		<script type="text/x-template" id="listinner">
+		  <div class="content-area">
+		    <div class="content-inner"> 
+			  <section id="con">
+			    <div class="list-inner">
+			     <div class="h2-hix">
+			     <div class="h2-hix-in">
+			      <h2 v-if="language == 'tn'">{{title_tn}}</h2>  
+					<h2 v-else>
+						<div v-if="path == '1'">
+							<i>{{title_en}}</i> {{title_nam}}
+						</div>
+						<div v-else>
+							<div class="upper">{{title_en}} <span v-html="title_nam"></span></div>
+						</div>
+					</h2> 
+				    </div>
+				    </div>
+				  <div class="list-connonp-wrp">
+					<div class="ns-imfnsc" v-if="id == 'cinnamon'" style="background-image: url(img/cinnamon.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'sapphire'" style="background-image: url(img/sappgire.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'coral'" style="background-image: url(img/coral.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'topaz'" style="background-image: url(img/topaz.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'maragatham'" style="background-image: url(img/emerald.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'maanikkam'" style="background-image: url(img/ruby.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'muthu'" style="background-image: url(img/pearl.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'vaiduriyam'" style="background-image: url(img/catseye.jpg)"></div>
+					<div class="ns-imfnsc" v-else-if="id == 'diamond'" style="background-image: url(img/diamond.jpg)"></div>
+				    <div class="list-connonp-wrp-inner" v-bind:style="{ width: width, left: left }">
+				      <div class="list-connonp" v-for="(item, index) in sndata" :key="item">
+						<div v-html="item.tn" v-bind:class="{active: index == active}" v-if="language == 'tn'"></div>
+						<div v-html="item.en" v-bind:class="{active: index == active}" v-else></div>
+				      </div>
+				    </div>
+				  </div>
+			    </div> 
+			  </section>
+			  <div class="sec-footer">
+			    <span class="nav" v-on:click="leftClick()" v-bind:class="{disabled: disableleft}"></span>
+			    <div class="progress"><i>{{active+1}} / {{total}}</i><span v-bind:style="{ width: widthper }"></span></div>
+				<span class="nav last" v-on:click="rightClick()"  v-bind:class="{disabled: disablerightt}"></span>
+			  </div>
+		    </div>
+		  </div>
+		</script> 
+		
+		
+	     <!-- <div class="row loading"> -->
+		   <!-- <div class="col-6" v-for="index in 10" :key="index"> -->
+			 <!-- <div class="loading-title"><span></span></div> -->
+			 <!-- <div class="loading-box"><span></span></div> -->
+			 <!-- <div class="loading-title"><span></span></div> -->
+		   <!-- </div> -->
+	    <!-- </div> -->
+ 
+		
+		<script type="text/x-template" id="side-menu">
+			<div class="side-menu" v-bind:class="{active: showmeu}" id="side-menu">
+			<div class="overlay" v-on:click="showmeu = false"></div>
+			 
+			<div class="con">
+			 
+			 
+			<ul v-on:click="close"> 
+
+			  <li v-if="language == 'tn' "><router-link to="/introduction">முன்னுரை</router-link></li> 
+			  <li v-else><router-link to="/introduction">INTRODUCTION</router-link></li>
+
+			  <li v-if="language == 'tn' "><router-link to="/about">செயலியைப் பற்றி</router-link></li> 
+			  <li v-else><router-link to="/about">ABOUT THE APP</router-link></li>
+
+			  <li v-if="language == 'tn' "><router-link to="/need">செயலியின் தேவை</router-link></li> 
+			  <li v-else><router-link to="/need">NEED OF THE APP</router-link></li>
+
+			  <li v-if="language == 'tn' "><router-link to="/howto">செயலியை எவ்வாறு பயன்படுத்துவது</router-link></li> 
+			  <li v-else><router-link to="/howto">HOW TO USE THE APP</router-link></li>	
+
+			  <li v-if="language == 'tn' "><router-link to="/acknowledgement">ஒப்புதல்</router-link></li> 
+			  <li v-else><router-link to="/acknowledgement">ACKNOWLEDGEMENT</router-link></li>	
+
+			  <li v-if="language == 'tn' "><router-link to="/reference">துணை புரிந்த நூல்கள்</router-link></li> 
+			  <li v-else><router-link to="/reference">REFERENCE</router-link></li>	
+			  
+			  <li v-if="language == 'tn' "></li> 
+			  <li v-else><router-link to="/glossary">GLOSSARY</router-link></li>	
+
+			  <!-- <li><a v-on:click="share">Share</a></li> -->
+			</ul>
+			 
+			 
+			</div>
+		   </div> 
+		</script>
+
+		<!-- about page -->
+		<script type="text/x-template" id="about">
+			<div class="content-area">
+			  <div class="ui-conins"  >
+				<div v-if="language == 'tn' ">
+				  <h1>செயலியைப் பற்றி</h1> 
+				  <p><span class="list-style-v1"></span> <b>“சித்தா ரிஃபைன்ஸ்”</b> செயலி ஒன்பது பகுதிகளை உள்ளடக்கியது,</p>
+				  <ol>
+					<li>மூலிகை</li>
+					<li>உலோகம்</li>
+					<li>பஞ்ச சூதம்</li>
+					<li>பாடாணம்</li>
+					<li>காரசாரம்</li>
+					<li>நவமணி</li>
+					<li>உபரசம்</li>
+					<li>சீவம்</li>
+					<li>திரவப் பொருள்கள்</li> 
+				  </ol>
+				  <p><span class="list-style-v1"></span> ஒவ்வொரு பகுதியிலும் அதிலடங்கும் மூல மருந்து சரக்குகள் உள்ளன.</p>
+				  <p><span class="list-style-v1"></span> மூல மருந்து சரக்கிற்கான பல்வேறு சுத்திகரிப்பு நடைமுறைகள் அவற்றின் உரை குறிப்புகளுடன் இடம்பெற்றுள்ளன.</p>
+
+				</div>
+				<div v-else>
+				  <h1>ABOUT THE APP</h1>
+					<p><span class="list-style-v1"></span> <b>“Siddha Refines”</b> encompasses 9 categories;</p>
+				  <ol>
+					<li>Plant Kingdom</li>
+					<li>Metals</li>
+					<li>Mercury compounds</li>
+					<li>Minerals</li>
+					<li>Salts</li>
+					<li>Nine Gems</li>
+					<li>Secondary Minerals</li>
+					<li>Animal Kingdom</li>
+					<li>Liquids</li> 
+				  </ol>
+				  <p><span class="list-style-v1"></span> Each category comprises of its respective raw drugs.</p>
+				  <p><span class="list-style-v1"></span> Various purification procedures for the drug are enumerated along with their textual references.</p>
+				</div>	
+			  </div>
+			</div>
+		</script> 
+
+		<!-- introduction page -->
+		<script type="text/x-template" id="introduction">
+			<div class="content-area">
+			  <div class="ui-conins"  >
+				<div v-if="language == 'tn' ">
+				  <h1>முன்னுரை</h1>
+				  <p>சித்த மருத்துவம் மருத்துவ முறைகளுள் முதன்மையானது. சித்த மருத்துவம் பன்முகங்களை உள்ளடக்கியது. இதன் மருந்து செய்பாகங்கள் தாவர, தாது மற்றும் விலங்கினங்களின் சங்கமத்தை தழுவி உள்ளன. சித்த மருத்துவக் கோட்பாட்டின் படி, எல்லாவற்றிற்கும் இரு வெவ்வேறு பண்புகள் உள்ளன. அவ்வாறே மருந்து சரக்கானது பிணி நீக்கும் தன்மையும், நச்சுத்தன்மையும் கொண்டிருக்கும். மருந்துச் சரக்கு மேன்மையுடைய மருந்தாக முடிக்கப் பெற்று நோய் நீக்க வேண்டுமாயின் அது முதலில் சுத்திகரிக்கப்பட்டு நஞ்சு நீக்கப்பட வேண்டும். <b>"சுத்தி"</b> என்பது மருந்து தயாரிப்பில் முக்கிய பங்கு பெறுகிறது.  </p>
+				  <div class="song-back">
+				  <b><i>
+					“ஒன்றான சரக்குச் சுத்தி<br />
+					   யாவரு முரைக்க வில்லை<br />
+					கண்ணான சரக்குக் கெல்லாங்<br />
+					   கைய்மழந் தீரா விட்டால்<br />
+					பண்ணான மருந்து சேந்துப்<br />
+					   பருகிடில் பிணிபா ரிக்கும்<br />
+					நண்ணான செந்தூ ரங்க<br />
+					   ளிடைபடும் நன்றா காதே!”<br /></i></b>
+					<p class="text-right"><b> - அகத்தியர் கன்ம சூத்திரம்</b></p>
+				  </div>
+
+				  <p>அவ்வாறு சுத்திகரிக்கப்பட்ட ஒரு மருந்து சரக்கே மருத்துவனுக்கு புகழைப் பெற்றுத் தரத்தக்க மேன்மையான மருந்தாக முடியும். சித்த மருத்துவத்தில் தனித்தன்மை வாய்ந்த பல சுத்திகரிப்பு முறைகள் பொக்கிஷங்களாக கிடைக்கப் பெறுகின்றன. சில மருந்து சரக்குகளுக்கு முறிவு என்று குறிப்பிடப்பட்ட பொருளே அச்சரக்கிற்கு சுத்தி செய்ய பயன்படும் பொருளாக அமைகிறது. இதன் வாயிலாக சுத்திகரிப்பு முறைகளிலும் நம் முன்னோர்களின் அறிவாற்றலை உணர முடிகிறது. எனவே மக்களின் தேக மேன்மைக்கு வழியாக அமையும் மருந்துகளை செய்வதற்கு முன் மருந்தின் மூல சரக்குகள் சுத்திகரிக்கப்பட வேண்டும் என்பதை சித்த மருத்துவம் வலியுறுத்துகிறது. இந்த <b>"சித்தா ரிஃபைன்ஸ்"</b> செயலி அதற்கு பெரிதும் துணைபுரியும்.</p>
+				  <div class="song-back">
+				   <b class="fix--1"><i>"பற்றுநோய் தீரவென்றால் தருமம் வேண்டும்<br />
+					பாங்கான குணம் வேண்டும் வணக்கம்வேண்டும்<br />
+					சித்திரமாய் ஔடதங்கள் செய்ய வேண்டும்<br />
+					செய்மருந்து சுத்திவேண்டும் பத்தியம் வேண்டும்"</i></b>
+					</div>
+				</div>
+				<div v-else>
+					<h1>INTRODUCTION</h1>
+					<p>Siddha system is a Holistic Indigenous Medical Science of Great Antiquity. Its pharmaceutics relies on Herbs, Metals, Minerals and Animal products.</p> 
+				  <p>According to the Siddha Doctrine, each thing in nature has Beneficial (Nalvinai) and Detrimental (Thee vinai) characteristics. Likewise, Raw drugs possess Therapeutic effect and Noxious effect.</p> <p>To flourish the therapeutic effect and to diminish the noxious effect, refinement of raw drugs is essential. Siddha system possesses unique purification methods. Purification is an integral part of Medicine preparation which leads to amelioration of raw drugs.</p> <p>For some drugs, the antidote itself is engaged for purification as this subsides the noxious potency of the drugs. This manifests the empirical framework of our Ancestors in purification. Our Siddha science emphasizes on proper refinement of raw drugs before their inclusion for therapeutic ailments. Thus this <b>“Siddha Refines”</b> assists in accomplishing medicine with consummate elegance.</p>
+				</div>	
+			  </div>
+			</div>
+		</script> 
+
+		<!-- need page -->
+		<script type="text/x-template" id="need">
+			<div class="content-area">
+			  <div class="ui-conins">
+				<div v-if="language == 'tn' ">
+					<h1>செயலியின் தேவை</h1>
+					<p><span class="list-style-v1"></span> <b>“சித்தா ரிஃபைன்ஸ்”</b> செயலி சித்த இலக்கியங்களில் குறிப்பிடப்பட்டுள்ள சுத்திகரிப்பு நுட்பங்களை வழங்குகிறது.</p>
+					<p><span class="list-style-v1"></span> இந்த சுத்திகரிப்பு நடைமுறைகள் மூல மருந்து சரக்குகளின் நச்சுத்தன்மையைக் குறைப்பதற்கும் மருந்தின் செயல்திறனை மேம்படுத்துவதற்கும் பயன்படுகின்றன.</p>
+					<p><span class="list-style-v1"></span> மருந்துகளில் பயன்படுத்துவதற்கு முன்னர் மூல மருந்து சரக்குகளின் நச்சுத்தன்மையை அகற்றுவது கட்டாயமாக இருப்பதால், நிலையான சுத்திகரிப்பு முறைகள் தேவைப்படுகின்றன. இந்த செயலி அதனை உள்ளங்கை நெல்லிக்கனியாக வழங்குகிறது.</p>
+				</div>
+				<div v-else>
+					<h1>NEED OF THE APP</h1>
+					<p><span class="list-style-v1"></span> <b>“Siddha Refines”</b> furnishes the assorted refining techniques which are proclaimed in our Siddha literatures.</p>
+					<p><span class="list-style-v1"></span> These refining procedures can be employed to nullify alleged toxicity of raw drugs and to potentiate their efficacy.</p>
+					<p><span class="list-style-v1"></span> As it is mandatory to detoxify the raw drugs prior to their utilization in medicines, <b>“Siddha Refines”</b> elucidates the standard purification methods in a nutshell.</p>
+				</div>	
+			  </div>  
+			</div>
+		</script>
+
+		<!-- how to page -->
+		<script type="text/x-template" id="howto">
+			<div class="content-area">
+			  <div class="ui-conins">
+				<div v-if="language == 'tn' ">
+					<h1>செயலியை எவ்வாறு பயன்படுத்துவது</h1>
+					<p><span class="list-style-v1"></span> <b>“சித்தா ரிஃபைன்ஸ்”</b> செயலி பயன்படுத்துவதற்கு எளிதானதாக தொழில்நுட்ப நுணுக்கத்துடன் வடிவமைக்கப்பட்டுள்ளது.</p>
+					<p><span class="list-style-v1"></span> எங்கும் எளிதில் காணும் வகையில் வடிவமைக்கப்பட்டுள்ளது.</p>
+					<p><span class="list-style-v1"></span> தமிழ் மற்றும் ஆங்கிலம் என இரு மொழிகளில் கிடைக்கப் பெறுகிறது. பயனருக்கு தேவையான மொழியை தாமே தேர்வு செய்து கொள்ளலாம்.</p>
+					<p><span class="list-style-v1"></span> முகப்பு பகுதியில் உள்ள 9 பிரிவுகளை தொடுவதன் மூலம் அப்பிரிவினுள் செல்லலாம்.</p>
+					<p><span class="list-style-v1"></span> பயனர் தாம் விரும்பிய மருந்து சரக்குகளை தொடுவதன் மூலம் அவற்றின் சுத்தி முறைகளை அறிந்து கொள்ளலாம்.</p>
+					<p><span class="list-style-v1"></span> வெவ்வேறு சுத்திகரிப்பு நுட்பங்களைப் பார்க்க, கீழே வழங்கப்பட்ட வலது மற்றும் இடது தலை அம்பு சின்னமுடைய வண்ண சதுர பெட்டியை அழுத்தவும்.</p>
+					<p><span class="list-style-v1"></span> மேலே உள்ள தேடல் பகுதியை பயன்படுத்தி தாம் விரும்பும் மருந்து சரக்கினை தேர்வு செய்து கொள்ளலாம்.</p>
+				</div>
+				<div v-else>
+					<h1>HOW TO USE THE APP</h1>
+					<p><span class="list-style-v1"></span> <b>“Siddha Refines”</b> is user friendly, professionally designed with intuitive interface.</p>
+					<p><span class="list-style-v1"></span> It is handy and compact.</p>
+					<p><span class="list-style-v1"></span> As a piece of cake at user’s fingertips.</p>
+					<p><span class="list-style-v1"></span> Bilingual in Tamil and English languages. The user can easily switch over the languages.</p>
+					<p><span class="list-style-v1"></span> Click the image icon on the Home screen to enter into the specific category.</p>
+					<p><span class="list-style-v1"></span> Choose the Raw drug of your choice.</p>
+					<p><span class="list-style-v1"></span> Tap the colour square box with right and left head arrow symbol furnished at the bottom to glimpse different purification techniques.</p>
+					<p><span class="list-style-v1"></span> Manipulate the search box at the top of raw drug catalog to gain prompt quest.</p>
+				</div>
+			  </div>  
+			</div>
+		</script>
+		
+		 
+		
+
+		<!-- acknowledgement page -->
+		<script type="text/x-template" id="acknowledgement">
+			<div class="content-area">
+			  <div class="ui-conins">
+				<div v-if="language == 'tn' ">
+				  <p><span class="list-style-v1"></span> முதலாவதாக, இந்த செயலியை உருவாக்க உரிய சந்தர்ப்பத்தையும், வாய்ப்பையும், முடிக்கும் திறனையும் எங்களுக்கு அருளிய எல்லாம் வல்ல இறைவையும், சித்தர்களையும் வணங்குகிறோம்.</p>
+				  <p><span class="list-style-v1"></span> இச்செயலி நிறைவு பெற ஊக்கமளித்த எங்கள் கல்லூரி முதல்வர், <b>டாக்டர் கே.பாலகுருசாமி எம்.டி (எஸ்), வேலுமயிலு சித்த மருத்துவக் கல்லூரி,</b> அவர்களுக்கு எங்கள் பணிவான நன்றியை  தெரிவித்துக் கொள்கிறோம்.</p>
+				  <p><span class="list-style-v1"></span> <b>“சித்தா ரிஃபைன்ஸ்”</b>, செயலியை வடிவமைக்க உறுதுணை, சிறப்பான வழிகாட்டுதலுடன் , தகுந்த ஆலோசனையும்  நல்கிய  எங்கள் இணை பேராசிரியர்<b> டாக்டர் செ. சுரேஷ் எம்.டி (எஸ்), வேலுமயிலு சித்த மருத்துவக் கல்லூரி,</b> அவர்களுக்கு எங்கள் மனமுவந்த நன்றியை வெளிப்படுத்துகிறோம்.</p>
+				  <p><span class="list-style-v1"></span> இப்பணியில் தொடர்ந்து ஆதரவளித்து பக்கபலமாக இருந்தமைக்கு எங்கள் <b>குடும்பத்தினருக்கு</b> எங்கள் உளம்கனிந்த நன்றியைத் தெரிவித்துக் கொள்கிறோம்.</p>
+				  <p><span class="list-style-v1"></span> மேலும் வேலுமயிலு சித்த மருத்துவக் கல்லூரி மற்றும் மருத்துவமனையின் நிர்வாகத்திற்கு எங்கள் நன்றியைத் தெரிவித்துக் கொள்கிறோம்.</p>
+				  <p><span class="list-style-v1"></span> இச்செயலியின் மேம்பாட்டிற்குத் திறம்பட தொழில்நுட்ப ஆதரவு அளித்த <b>திரு. மோ. சகின் </b>அவர்களுக்கு எங்கள் நெஞ்சார்ந்த நன்றியைத் தெரிவித்துக் கொள்கிறோம்.</p>
+				  <div class=" ">
+					<p><b>வழங்கியவர்</b>,</p><p><b>  கா. ஸ்ரீ இளமதி தேவசேனா, இறுதி ஆண்டு, பி.எஸ்.எம்.எஸ் (2016 - 2022).</b> </p><p><b>சீ. அதுலா, இறுதி ஆண்டு, பி.எஸ்.எம்.எஸ் (2015 - 2021).</b></p><p>வேலுமயிலு சித்த மருத்துவக் கல்லூரி மற்றும் மருத்துவமனை, ஸ்ரீபெரும்புதூர், தமிழ்நாடு.</p>
+
+				  </div>	
+				</div>
+				<div v-else>
+					<p><span class="list-style-v1"></span> <b><i>“In all your ways acknowledge him and he shall direct your paths”.</i></b></p>
+					<p><span class="list-style-v1"></span> Firstly, we bow to God and all Siddhars for granting us the capacity to complete this work.</p>
+					<p><span class="list-style-v1"></span> We would like to express our profound gratitude to our Principal Sir, <b>Dr. K. Balagurusamy MD (S)</b>, Velumailu Siddha Medical College, for his motivation.</p>
+					<p><span class="list-style-v1"></span> We would like to express our heartfelt thanks to our Associate Professor, <b>Dr. S. Suresh MD (S)</b>, Velumailu Siddha Medical College, for his fruitful guidance, expert advice, moral support and being the backbone of <b>“Siddha Refines”</b>.</p>
+					<p><span class="list-style-v1"></span> We would like to extend our cordial thanks to our <b>family and well-wishers</b> for their persistent encouragement.</p>
+					<p><span class="list-style-v1"></span> We are grateful to our College management, Velumailu Siddha Medical College and Hospital, Sriperumbudur. </p>
+					<p><span class="list-style-v1"></span> We would like to convey our sincere thanks to <b>Mr. M. Shakin</b> for his proficient technical support.</p>
+					<p><b>By,</b></p>
+					<p><b>K. Sri Elamathi Devasena, Final year BSMS (2016 - 2022)</b>.</p>
+					<p><b>S. Atula, Final year BSMS (2015 - 2021)</b>.</p>
+					<p>Velumailu Siddha Medical College and Hospital, Sriperumbudur, Tamilnadu.</p>
+				</div>	
+			  </div>  
+			</div>
+		</script>
+
+
+		<!-- reference page -->
+		<script type="text/x-template" id="reference">
+			<div class="content-area">
+			  <div class="ui-conins">
+				<div v-if="language == 'tn' ">
+					<h1>துணை புரிந்த நூல்கள்</h1>
+					<p><span class="list-style-v1"></span> திரு. டி.வி. சாம்பசிவ பிள்ளை, “தமிழ் - <b>ஆங்கில மருத்துவ அகராதி, வேதியியல், தாவரவியல் மற்றும் அதனுடன் தொடர்புடைய அறிவியல்</b>”, தி ரிசர்ச் இன்ஸ்டிடியூட் ஆப் சித்தர்ஸ் சயின்ஸ், சென்னை.</p>
+					<p><span class="list-style-v1"></span> “<b>சித்தா ஃபார்முலரி ஆஃப் இந்தியா (பகுதி – II)</b>”, முதல் பதிப்பு, ஜனவரி 2011, ஆயுஷ் துறை.</p>
+					<p><span class="list-style-v1"></span> மரு. ஆர். தியாகராஜன், “<b>குணபாடம் தாது சீவ வகுப்பு</b>”, எட்டாவது பதிப்பு - 2018, இந்திய மருத்துவம் மற்றும் ஹோமியோபதி துறை.</p>
+					<p><span class="list-style-v1"></span> திரு. க.ச. முருகேச முதலியார், “<b>குணபாடம் - பாகம் 1 (மூலிகை வகுப்பு)</b>”, இந்திய மருத்துவம் மற்றும் ஓமியோபதி துறை, சென்னை - 106.</p>
+					<p><span class="list-style-v1"></span> திரு. சி. கண்ணுசாமிப்பிள்ளை, “<b>சிகிச்சா ரத்ந தீபம்</b>”, இரண்டாம் பதிப்பு - 2018, பி. இரத்தின நாயகர் அண்ட் சன்ஸ், சென்னை – 79.</p>
+					<p><span class="list-style-v1"></span> திரு. சிவன், “<b>யாகோபு சுண்ணக் காண்டம் 600</b>”, இரண்டாம் பதிப்பு – 2015, ஸ்ரீ தேவி புத்தக நிலையம், சென்னை.</p>
+					<p><span class="list-style-v1"></span> மரு. வ. அருணாச்சலம் எம்.டி(எஸ்), “<b>மூலிகை இயல்</b>”.</p>
+					<p><span class="list-style-v1"></span> மரு. பொன். ராமநாதன் எம்.டி(எஸ்), <b>“சித்த மருந்து முறையியல் - Siddha Pharmacopoeia”</b>, முதல் பதிப்பு, ஜனவரி 2000, அகில இலங்கை அரச சேவை சித்த ஆயுர்வேத வைத்திய அதிகாரிகள் சங்கம், யாழ்ப்பாணம்.</p>
+					<p><span class="list-style-v1"></span> திரு. குப்புசாமி நாயுடு, <b>“யாகோபு வைத்தியம் 300, நாடி விபரமும் சரக்கு சுத்தியும்”</b>, குருசாமி கோனார் அண்ட் சன்ஸ், ஐந்தாம் பதிப்பு - 1955.</p>
+					<p><span class="list-style-v1"></span> மரு. ஆனைவாரி ஆனந்தன், பிஎச்.டி, <b>“சரக்கு சுத்தி செய்முறைகள்”</b>, முதல் பதிப்பு – 2008, இந்திய மருத்துவம் மற்றும் ஓமியோபதி துறை, சென்னை.</p>
+					<p><span class="list-style-v1"></span> மரு. தேவ ஆசீர்வாதம் சாமுவேல், <b>“மருந்து செய் இயலும் கலையும்”</b>, இந்திய மருத்துவம் மற்றும் ஓமியோபதி துறை, சென்னை.</p>
+					<p><span class="list-style-v1"></span> <b>“இம்ப்காப்ஸ் சித்த மருந்துகளின் செய்முறை”</b>, பதினேழாம் பதிப்பு - 2018, இந்திய மருத்துவர்கள் கூட்டுறவு மருந்து செய்நிலையம் மற்றும் பண்டகசாலை, சென்னை.</p>
+				</div>
+				<div v-else>
+				  <h1>REFERENCE</h1>
+				  <p><span class="list-style-v1"></span> Thiru. T.V. Sambasivam Pillai, <b>“Tamil – English Dictionary of Medicine”</b>, Chemistry, Botany and Allied Sciences, The Research Institute of Siddhar’s Science, Chennai.</p>
+				  <p><span class="list-style-v1"></span> <b>“The Siddha Formulary of India (Part –II)”</b>, First Edition, January 2011, Department of Ayush.</p>
+				  <p><span class="list-style-v1"></span> Dr. R.Thiyagarajan, <b>“Gunapaadam Thaathu Jeeva Vaguppu”</b>, Eighth Edition, Department of Indian Medicine and Homeopathy.</p>
+				  <p><span class="list-style-v1"></span> Thiru. C.S. Murugesa Mudaliyar, <b>“Gunapaadam – Pagam 1 (Mooligai Vaguppu)”</b>, Department of Indian Medicine and Homeopathy. Murugesa</p>
+				  <p><span class="list-style-v1"></span> Thiru. S. Kannuswamipillai, <b>“Sikitcha Ratna Deepam”</b>, Second Edition – 2018, B.Ratna Nayakar and Sons, Chennai – 79.</p>
+				  <p><span class="list-style-v1"></span> Thiru. Sivan, <b>“Yagopu Chunna Kaandam 600”</b>, Second Edition – 2015, Sri Devi Book Store, Chennai.</p>
+				  <p><span class="list-style-v1"></span> Dr. V. Arunachalam M.D.(S), <b>“Mooligai Iyal”</b></p>
+				  <p><span class="list-style-v1"></span> Dr. P. Ramanathan M.D (S), <b>“Siddha Marundhu Muraiiyal - Siddha Pharmacopoeia”</b>, First Edition, All Island Service Siddha Ayurvedic Medical Officers Union, Jaffna, Sri Lanka, January 2000.</p>
+				  <p><span class="list-style-v1"></span> Thiru. Kuppusamy Naidu, <b>“Yagopu Vaidhiyam 300, Naadi vibaramum Sarakku Suththiyum”</b>, Gurusamy Konar and Sons, Fifth Edition - 1955.</p>
+				  <p><span class="list-style-v1"></span> Thiru. Aanaivaari Anandhan Ph.D, <b>“Sarakku Suththi Seimuraigal”</b>, First Edition - 2008 Department of Indian Medicine and Homeopathy, Chennai.</p>
+				  <p><span class="list-style-v1"></span> Dr. Deva Aasirvadham Samuvel M.D (S), <b>“Marundhu Sei Iyalum Kalaiyum”</b>, Department of Indian Medicine and Homeopathy, Chennai.</p>
+				  <p><span class="list-style-v1"></span> <b>“Impcops Siddha Marundhugalin Seimurai”</b>, Seventeenth Edition – 2018,The Indian Medical Practitioners Co-operative Pharmacy and Stores Ltd, Chennai.</p>
+				</div>	
+			  </div>  
+			</div>
+		</script>
+		
+		
+		<!-- glossary page -->
+		<script type="text/x-template" id="glossary">
+			<div class="content-area">
+			  <div class="ui-conins">
+				<div v-if="language == 'tn' ">
+					<h1>GLOSSARY</h1>
+				  <div class="tb-fix">
+				   <table>
+				   <thead>
+				   <tr class="text-center"><td><b>TERMS</b></td><td><b>EXPLANATION</b></td></tr>
+				   </thead>
+				   <tbody>
+				   <tr><td>Bundle</td><td>Tying the drug in a piece of cloth ( பொட்டணம் கிழி கட்டல்)</td></tr>
+				   <tr><td>Char</td><td>Partially burn so as to blacken the object (சுட்டு கரியாக்கல்)</td></tr>
+				   <tr><td>Chisel</td><td>A long-bladed hand tool used to cut or shape metals (உளி)</td></tr>
+				   <tr><td>Churn</td><td>To stir (மத்தித்தல்)</td></tr>
+				   <tr><td>Concoction</td><td>Mixture of various liquids (கலவை)</td></tr>
+				   <tr><td>Cow dung juice</td><td>Aqueous solution of cow dung. (சாணஞ்சாறு/சாணப்பால்)</td></tr>
+				   <tr><td>Crucible</td><td>A ceramic or metal ware in which metals are melted or subjected to very high temperature. (குகை)</td></tr>
+				   <tr><td>Daub</td><td>Coat or smear an object with thick paste. (பூசுதல்/கவசம் செய்தல்).</td></tr>
+				   <tr><td>Decant</td><td>Gradually pour from one container into another in order to separate out the sediment.(தெளிய வைத்து இறுத்தல்)</td></tr>
+				   <tr><td>Distilled water</td><td>Water that has been boiled into vapor and condensed back into liquid with distillation apparatus (தீநீர்)</td></tr>
+				   <tr><td>Double boiler method</td><td>A method of heating that includes usage of utensil with upper and lower pans in which contents of upper pan is heated by boiling water in lower pan. (நீர் இயந்திரம்)</td></tr>
+				   <tr><td>Drench</td><td>Wet thoroughly (தோய்த்து)</td></tr>
+				   <tr><td>Earthen tile</td><td>A thin rectangular slab of baked clay (மண் ஓடு)</td></tr>
+				   <tr><td>Ebullient</td><td>Substance that bubbles up in a boiling liquid. (பொங்கி திரளும் பொருள்)</td></tr>
+				   <tr><td>Ember</td><td>Red hot burning piece of coal or wood in a dying fire (நெருப்பு அனல்)</td></tr>
+				   <tr><td>Exsiccate</td><td>To exhaust moisture from a substance. (வறுத்துப் பொரித்து கொள்ளல்)</td></tr>
+				   <tr><td>Filtrate</td><td>A liquid that has been passed through a filter (வடிகட்டிய திரவம்)</td></tr>
+				   <tr><td>Furnace</td><td>An enclosed structure in which metals can be heated to very high temperature (உலை)</td></tr>
+				   <tr><td>Grill</td><td>Heating directly over fire. (நெருப்பில் வாட்டல்)</td></tr>
+				   <tr><td>Handmill stone</td><td>A pair of large, circular, flat stones used to grind manually. (திரிகல்)</td></tr>
+				   <tr><td>Heifer</td><td>A cow that has not given birth to a calf. (கிடாரி, கன்று ஈனாத இளம்பசு)</td></tr>
+				   <tr><td>Incineration</td><td>Burning the earthen vessel containing medicine in a pit with cow dung cakes being piled over it.(புடமிடல்)</td></tr>
+				   <tr><td>Insolate</td><td>The process of drying medicines in sunlight. (சூரிய புடம் வைத்தல்)</td></tr>
+				   <tr><td>Knead</td><td>Press and squeeze it with hands (பிசைதல்)</td></tr>
+				   <tr><td>Ladle</td><td>Long-handled large spoon with a cup shaped bowl (அகப்பை)</td></tr>
+				   <tr><td>Latices</td><td>Plural form of latex (தாவரப் பால்)</td></tr>
+				   <tr><td>Lime water/ Lime stone water</td><td>Solution of lime stone. (சுண்ண நீர்)</td></tr>
+				   <tr><td>Lute</td><td>Liquid clay used to seal or to bind the container of drugs and its lid together with clay smeared cloth strips for rendering it air tight. (சீலைமண் செய்தல்)</td></tr>
+				   <tr><td>Patty</td><td>A thin flat disc shaped cake of substance or medicine paste (அடை)</td></tr>
+				   <tr><td>Pellets</td><td>A small rounded compressed mass of a substance (வில்லை)</td></tr>
+				   <tr><td>Pestle</td><td>To crush or grind with pestle.</td></tr>
+				   <tr><td>Porridge</td><td>A preparation made by boiling grains in water until thick (கஞ்சி)</td></tr>
+				   <tr><td>Pound</td><td>To crush an object by hitting it repeatedly. (இடித்துத் தூளாக்கல்)</td></tr>
+				   <tr><td>Precipitate</td><td>Solid substance that is deposited from a solution (வீழ் படிவு)</td></tr> 
+				   <tr><td>Pulverise</td><td>Reduce to fine particles. (தூளாக்குதல்) </td></tr>
+<tr><td>Remnant</td><td>A quantity that is left after greater part is used. </td></tr>
+<tr><td>Residue</td><td>Small amount of a thing that remains after the main part is taken. </td></tr>
+<tr><td>Rice boiled water</td><td>Liquid obtained by draining boiled rice. (சோறு வடித்த நீர்) </td></tr>
+<tr><td>Rice washed filtrate</td><td>Water with which rice has been washed. (கழுநீர், அரிசி களைந்த நீர்) </td></tr>
+<tr><td>Scorch</td><td>Burn a surface slightly to change its color and texture (கருக்கி வேக வைத்தல்) </td></tr>
+<tr><td>Simmer</td><td>To heat at slight temperature below boiling point (low flame). (சிறு தீயாக எரித்தல்) </td></tr>
+<tr><td>Skim</td><td>Remove thin layer of substance on the surface of a liquid. (திரவத்தில் ஆடை படிவதை நீக்கல்) </td></tr>
+<tr><td>Slaking</td><td>The process of combining quick lime with water to produce slaked lime (Calcium hydroxide) (சுண்ணாம்பைத் தாளித்தல்) </td></tr>
+<tr><td>Slotted plate</td><td>Plate with one or more holes beneath (துளை ஆடித் தட்டு) </td></tr>
+<tr><td>Steam heat</td><td>To heat a substance using steam generated from a liquid. (பிட்டவியல்) </td></tr>
+<tr><td>Supernatant</td><td>Precipitate-free clear liquid floating above the sedimented material. (தெளிவு நீர்) </td></tr>
+<tr><td>Tholaayandhiram</td><td>An apparatus for vapour bath in which bundle containing drug is suspended in a vessel containing liquid. (தோலாயந்திரம்) </td></tr>
+<tr><td>Toddy</td><td>A natural alcoholic sap of some kinds of palm like Palmyra palm, Date palm, etc. (கள்)</td></tr>
+<tr><td>Triturate</td><td>Grind to a fine powder (அரைத்துப் பொடித்தல்) </td></tr>
+<tr><td>Uprush</td><td>Sudden upward effervescence (மேல்நோக்கி பொங்குதல்) </td></tr>
+<tr><td>Vapour bath</td><td>Heat a substance by vapour liberated from a liqud. </td></tr>
+<tr><td>Whey</td><td>The watery part of milk that remains after curd formation (தயிரில் இருந்து தோய்ந்த நீர்) </td></tr>
+<tr><td>Winnow</td><td>Blowing away impurities to free the substance from lighter particles of dirt (புடைத்தல்) </td></tr> 
+				   </tbody> 
+				   </table>
+				   </div>
+					 
+				</div>
+				<div v-else>
+				  <h1>GLOSSARY</h1>
+				  <div class="tb-fix">
+				   <table>
+				   <thead>
+				   <tr class="text-center"><td><b>TERMS</b></td><td><b>EXPLANATION</b></td></tr>
+				   </thead>
+				   <tbody>
+				   <tr><td>Bundle</td><td>Tying the drug in a piece of cloth ( பொட்டணம் கிழி கட்டல்)</td></tr>
+				   <tr><td>Char</td><td>Partially burn so as to blacken the object (சுட்டு கரியாக்கல்)</td></tr>
+				   <tr><td>Chisel</td><td>A long-bladed hand tool used to cut or shape metals (உளி)</td></tr>
+				   <tr><td>Churn</td><td>To stir (மத்தித்தல்)</td></tr>
+				   <tr><td>Concoction</td><td>Mixture of various liquids (கலவை)</td></tr>
+				   <tr><td>Cow dung juice</td><td>Aqueous solution of cow dung. (சாணஞ்சாறு/சாணப்பால்)</td></tr>
+				   <tr><td>Crucible</td><td>A ceramic or metal ware in which metals are melted or subjected to very high temperature. (குகை)</td></tr>
+				   <tr><td>Daub</td><td>Coat or smear an object with thick paste. (பூசுதல்/கவசம் செய்தல்).</td></tr>
+				   <tr><td>Decant</td><td>Gradually pour from one container into another in order to separate out the sediment.(தெளிய வைத்து இறுத்தல்)</td></tr>
+				   <tr><td>Distilled water</td><td>Water that has been boiled into vapor and condensed back into liquid with distillation apparatus (தீநீர்)</td></tr>
+				   <tr><td>Double boiler method</td><td>A method of heating that includes usage of utensil with upper and lower pans in which contents of upper pan is heated by boiling water in lower pan. (நீர் இயந்திரம்)</td></tr>
+				   <tr><td>Drench</td><td>Wet thoroughly (தோய்த்து)</td></tr>
+				   <tr><td>Earthen tile</td><td>A thin rectangular slab of baked clay (மண் ஓடு)</td></tr>
+				   <tr><td>Ebullient</td><td>Substance that bubbles up in a boiling liquid. (பொங்கி திரளும் பொருள்)</td></tr>
+				   <tr><td>Ember</td><td>Red hot burning piece of coal or wood in a dying fire (நெருப்பு அனல்)</td></tr>
+				   <tr><td>Exsiccate</td><td>To exhaust moisture from a substance. (வறுத்துப் பொரித்து கொள்ளல்)</td></tr>
+				   <tr><td>Filtrate</td><td>A liquid that has been passed through a filter (வடிகட்டிய திரவம்)</td></tr>
+				   <tr><td>Furnace</td><td>An enclosed structure in which metals can be heated to very high temperature (உலை)</td></tr>
+				   <tr><td>Grill</td><td>Heating directly over fire. (நெருப்பில் வாட்டல்)</td></tr>
+				   <tr><td>Handmill stone</td><td>A pair of large, circular, flat stones used to grind manually. (திரிகல்)</td></tr>
+				   <tr><td>Heifer</td><td>A cow that has not given birth to a calf. (கிடாரி, கன்று ஈனாத இளம்பசு)</td></tr>
+				   <tr><td>Incineration</td><td>Burning the earthen vessel containing medicine in a pit with cow dung cakes being piled over it.(புடமிடல்)</td></tr>
+				   <tr><td>Insolate</td><td>The process of drying medicines in sunlight. (சூரிய புடம் வைத்தல்)</td></tr>
+				   <tr><td>Knead</td><td>Press and squeeze it with hands (பிசைதல்)</td></tr>
+				   <tr><td>Ladle</td><td>Long-handled large spoon with a cup shaped bowl (அகப்பை)</td></tr>
+				   <tr><td>Latices</td><td>Plural form of latex (தாவரப் பால்)</td></tr>
+				   <tr><td>Lime water/ Lime stone water</td><td>Solution of lime stone. (சுண்ண நீர்)</td></tr>
+				   <tr><td>Lute</td><td>Liquid clay used to seal or to bind the container of drugs and its lid together with clay smeared cloth strips for rendering it air tight. (சீலைமண் செய்தல்)</td></tr>
+				   <tr><td>Patty</td><td>A thin flat disc shaped cake of substance or medicine paste (அடை)</td></tr>
+				   <tr><td>Pellets</td><td>A small rounded compressed mass of a substance (வில்லை)</td></tr>
+				   <tr><td>Pestle</td><td>To crush or grind with pestle.</td></tr>
+				   <tr><td>Porridge</td><td>A preparation made by boiling grains in water until thick (கஞ்சி)</td></tr>
+				   <tr><td>Pound</td><td>To crush an object by hitting it repeatedly. (இடித்துத் தூளாக்கல்)</td></tr>
+				   <tr><td>Precipitate</td><td>Solid substance that is deposited from a solution (வீழ் படிவு)</td></tr> 
+				   <tr><td>Pulverise</td><td>Reduce to fine particles. (தூளாக்குதல்) </td></tr>
+<tr><td>Remnant</td><td>A quantity that is left after greater part is used. </td></tr>
+<tr><td>Residue</td><td>Small amount of a thing that remains after the main part is taken. </td></tr>
+<tr><td>Rice boiled water</td><td>Liquid obtained by draining boiled rice. (சோறு வடித்த நீர்) </td></tr>
+<tr><td>Rice washed filtrate</td><td>Water with which rice has been washed. (கழுநீர், அரிசி களைந்த நீர்) </td></tr>
+<tr><td>Scorch</td><td>Burn a surface slightly to change its color and texture (கருக்கி வேக வைத்தல்) </td></tr>
+<tr><td>Simmer</td><td>To heat at slight temperature below boiling point (low flame). (சிறு தீயாக எரித்தல்) </td></tr>
+<tr><td>Skim</td><td>Remove thin layer of substance on the surface of a liquid. (திரவத்தில் ஆடை படிவதை நீக்கல்) </td></tr>
+<tr><td>Slaking</td><td>The process of combining quick lime with water to produce slaked lime (Calcium hydroxide) (சுண்ணாம்பைத் தாளித்தல்) </td></tr>
+<tr><td>Slotted plate</td><td>Plate with one or more holes beneath (துளை ஆடித் தட்டு) </td></tr>
+<tr><td>Steam heat</td><td>To heat a substance using steam generated from a liquid. (பிட்டவியல்) </td></tr>
+<tr><td>Supernatant</td><td>Precipitate-free clear liquid floating above the sedimented material. (தெளிவு நீர்) </td></tr>
+<tr><td>Tholaayandhiram</td><td>An apparatus for vapour bath in which bundle containing drug is suspended in a vessel containing liquid. (தோலாயந்திரம்) </td></tr>
+<tr><td>Toddy</td><td>A natural alcoholic sap of some kinds of palm like Palmyra palm, Date palm, etc. (கள்)</td></tr>
+<tr><td>Triturate</td><td>Grind to a fine powder (அரைத்துப் பொடித்தல்) </td></tr>
+<tr><td>Uprush</td><td>Sudden upward effervescence (மேல்நோக்கி பொங்குதல்) </td></tr>
+<tr><td>Vapour bath</td><td>Heat a substance by vapour liberated from a liqud. </td></tr>
+<tr><td>Whey</td><td>The watery part of milk that remains after curd formation (தயிரில் இருந்து தோய்ந்த நீர்) </td></tr>
+<tr><td>Winnow</td><td>Blowing away impurities to free the substance from lighter particles of dirt (புடைத்தல்) </td></tr> 
+				   </tbody> 
+				   </table>
+				   </div>
+				</div>	
+			  </div>  
+			</div>
+		</script>
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/vue.min.js"></script>
+        <script type="text/javascript" src="js/vue-router.js"></script>
+        <script type="text/javascript" src="js/components.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
